@@ -60,6 +60,7 @@ jobs:
           gh pr checkout "${PR_URL}"
           git checkout -b new-msw-bump
           npx msw init public/ --save
+          git status --porcelain
           git add .
           git commit --no-verify -m "[dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
           git push origin new-msw-bump --force
