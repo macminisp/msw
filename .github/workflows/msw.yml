@@ -91,4 +91,4 @@ jobs:
       - name: Convert to draft msw bump from Dependabot
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
-          gh pr ready --draft "${PR_ID}"
+          gh pr ready "${PR_URL}" --undo
