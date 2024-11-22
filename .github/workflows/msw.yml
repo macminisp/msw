@@ -10,10 +10,10 @@ permissions:
 
 env:
   GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-  # GIT_AUTHOR_NAME: ${{ github.actor }}
-  # GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
-  # GIT_COMMITTER_NAME: GitHub
-  # GIT_COMMITTER_EMAIL: actions@github.com
+  GIT_AUTHOR_NAME: ${{ github.actor }}
+  GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
+  GIT_COMMITTER_NAME: GitHub
+  GIT_COMMITTER_EMAIL: actions@github.com
   # BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
   #BRANCH_NAME: msw-update-${{ github.run_id }}
 
