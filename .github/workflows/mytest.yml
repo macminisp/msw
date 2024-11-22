@@ -1,0 +1,66 @@
+name: mytest
+
+on:
+  workflow_dispatch: # Allows manual trigger of the workf
+
+env:
+  GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check_dependabot_bump:
+    runs-on: ubuntu-latest
+
+    steps:
+      # - name: Dependabot metadata
+      #   id: dependabot-metadata
+      #   uses: dependabot/fetch-metadata@v2
+
+      # PR_kwDONPafFs6CsSNM
+      
+        # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Install node_modules
+        run: npm ci
+
+      - name: Find Dependabot PR for msw
+        id: find_pr
+        run: |
+          PR_URL=$(gh pr list --search "dependabot update msw" --json url --jq ".[0].url")
+          echo "PR_URL=${PR_URL}" >> $GITHUB_ENV
+
+      # If no Dependabot PR exists, exit the workflow
+      - name: Exit if no Dependabot bump for msw
+        if: ${{ env.PR_URL == '' }}
+        run: echo "No Dependabot PR for MSW found. Exiting workflow."
+
+      # Pull the changes and create a new PR
+      - name: Create new PR for msw bump
+        if: ${{ env.PR_URL != '' }}
+        run: |
+          gh pr checkout "${PR_URL}"
+          git checkout -b new-msw-bump
+          echo "----------1"
+          git status --porcelain
+          echo "----------2"
+          npx msw init public/ --save
+          echo "----------3"
+          git status --porcelain
+          echo "----------4"
+          git add .
+          git push origin new-msw-bump
+          gh pr create \
+            --title "chore: bump msw to latest version" \
+            --body "This PR is based on the Dependabot bump for the MSW library." \
+            --base master \
+            --head new-msw-bump

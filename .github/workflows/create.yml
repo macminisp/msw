@@ -1,0 +1,80 @@
+name: create
+
+on:
+  workflow_dispatch:
+
+# permissions: write-all
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  GIT_AUTHOR_NAME: ${{ github.actor }}
+  GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
+  GIT_COMMITTER_NAME: GitHub
+  GIT_COMMITTER_EMAIL: actions@github.com
+  BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+  #BRANCH_NAME: msw-update-${{ github.run_id }}
+##
+jobs:
+  update_msw_worker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Install node_modules
+        run: |
+          npm ci
+
+      - name: Authenticate with PAT
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          echo $PAT_TOKEN | gh auth login --with-token
+
+      - name: Regenerate mockServiceWorker.js
+        run: |
+          
+          # if git ls-remote --exit-code --heads origin MSW-1; then
+          #   git fetch origin MSW-1
+          #   git checkout MSW-1
+          # else
+          #   git checkout -b MSW-1
+          # fi
+
+          git checkout -b MSW-1
+
+          npm i msw@latest
+          
+          npx msw init public/ --save
+
+      - name: Check for changes in mockServiceWorker.js
+        run: |
+          if [[ $(git status --porcelain) ]]; then
+            git status --porcelain
+
+            # git add package-lock.json
+            # git add package.json
+            # git add public/mockServiceWorker.js
+            git add .
+            git commit -m "ROM - blabla"
+          else
+            echo "No changes in mockServiceWorker.js"
+          fi
+
+      - name: Push new branch
+        run: |
+          git push --force origin MSW-1
+
+      - name: Create new pull request
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          gh pr create --base master --head MSW-1 --title 'MSW update' --body 'Created via CI/CD'
+          #
