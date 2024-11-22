@@ -1,0 +1,41 @@
+name: pull-request-test
+
+on:
+  workflow_dispatch:
+
+env:
+  GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  pull-request-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4 
+      - name: Authenticate with PAT
+        run: echo ${{ secrets.PAT_TOKEN }} | gh auth login --with-token
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: Install node_modules
+        run: npm ci
+      - name: Create new PR
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          NEW_BRANCH_NAME: test-branch-${{ github.run_id }}
+        run: |
+          git checkout -b $NEW_BRANCH_NAME
+          npm remove msw && npm i msw@latest
+          git add .
+          git commit --no-verify -m "Applied commit"
+          git push origin $NEW_BRANCH_NAME --force
+          gh pr create \
+            --title "Test: create new pull request from CI/CD workflow" \
+            --body "Some text info ...." \
+            --base master \
+            --head $NEW_BRANCH_NAME
