@@ -69,7 +69,7 @@ jobs:
             --base master \
             --head new-msw-bump
 
-      - name: Close msw bump from Dependabot
-        if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
-        run: |
-          gh pr close "${PR_URL}"
+      # - name: Close msw bump from Dependabot
+      #   if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+      #   run: |
+      #     gh pr close "${PR_URL}"
