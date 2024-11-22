@@ -58,7 +58,8 @@ jobs:
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
           gh pr checkout "${PR_URL}"
-          
+          echo "PR_URL is $PR_URL"
+          echo "Current branch is $(git rev-parse --abbrev-ref HEAD)"
           git rev-parse --abbrev-ref HEAD
 
           git checkout -b $NEW_BRANCH_NAME
