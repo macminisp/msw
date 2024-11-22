@@ -65,10 +65,12 @@ jobs:
           git rev-parse --abbrev-ref HEAD
 
           git checkout -b $NEW_BRANCH_NAME
-          echo "-------------------- npx msw init public/ --save"
+          echo "-------------------->>> package.json"
+          cat package.json
+          echo "-------------------->>> npx msw init public/ --save"
           npx msw init public/ --save
           cat public/mockServiceWorker.js
-          echo "-------------------- git status --porcelain"
+          echo "-------------------->>> git status --porcelain"
           git status --porcelain
           echo "-------------------------"
           git add .
