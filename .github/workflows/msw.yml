@@ -50,19 +50,14 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           CURRENT_BRANCH: ${{ github.event.pull_request.head.ref }}
         run: |
-          # PR_URL=$(gh pr list --search "dependabot update msw" --json url --jq ".[0].url")
-          # PR_ID=$(gh pr list --head $CURRENT_BRANCH --json id --jq ".[0].id")
-
-          PR_ID=$(gh pr list --head $CURRENT_BRANCH --json id --jq ".[0].id")
-          #echo "PR_URL=${PR_URL}" >> $GITHUB_ENV
-          echo "PR_ID=${PR_ID}" >> $GITHUB_ENV
+          PR_URL=$(gh pr list --head $CURRENT_BRANCH --json url --jq ".[0].url")
+          echo "PR_URL=${PR_URL}" >> $GITHUB_ENV
 
       - name: Create new PR for msw bump
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
-          # echo "PR_URL is $PR_URL"
-          echo "PR_ID is $PR_ID"
-          gh pr checkout "${PR_ID}"
+          echo "PR_URL is $PR_URL"
+          gh pr checkout "${PR_URL}"
           
           echo "Current branch is $(git rev-parse --abbrev-ref HEAD)"
           git rev-parse --abbrev-ref HEAD
