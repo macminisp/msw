@@ -36,6 +36,7 @@ jobs:
           git add .
           git commit --no-verify -m "Applied commit"
           git push origin $NEW_BRANCH_NAME
+          git merge master
           gh pr create \
             --title "Test: create new pull request from CI/CD workflow" \
             --body "Some text info ...." \
