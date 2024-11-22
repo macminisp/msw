@@ -73,3 +73,8 @@ jobs:
       #   if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
       #   run: |
       #     gh pr close "${PR_URL}"
+
+      - name: Convert to draft msw bump from Dependabot
+        if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        run: |
+          gh pr ready --draft "${PR_URL}"
