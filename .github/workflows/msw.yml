@@ -1,8 +1,8 @@
 name: msw
 
-on:  
+on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, synchronize]
 
 permissions:
   contents: write
@@ -15,7 +15,7 @@ env:
   GIT_COMMITTER_NAME: GitHub
   GIT_COMMITTER_EMAIL: actions@github.com
   # BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
-  #BRANCH_NAME: msw-update-${{ github.run_id }}
+  NEW_BRANCH_NAME: msw-update-${{ github.run_id }}
 
 jobs:
   update_msw_worker:
@@ -58,17 +58,17 @@ jobs:
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
           gh pr checkout "${PR_URL}"
-          git checkout -b new-msw-bump
+          git checkout -b $NEW_BRANCH_NAME
           npx msw init public/ --save
           git status --porcelain
           git add .
           git commit --no-verify -m "[dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
-          git push origin new-msw-bump --force
+          git push origin $NEW_BRANCH_NAME --force
           gh pr create \
             --title "Bump msw to latest version" \
             --body "This PR is based on the Dependabot bump for the MSW library with updates in mockServiceWorker.js file" \
             --base master \
-            --head new-msw-bump
+            --head $NEW_BRANCH_NAME
 
       # - name: Close msw bump from Dependabot
       #   if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
