@@ -55,6 +55,8 @@ jobs:
 
       - name: Create new PR for msw bump
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           echo "PR_URL is $PR_URL"
           gh pr checkout "${PR_URL}"
