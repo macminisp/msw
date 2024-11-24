@@ -7,14 +7,6 @@ runs:
         id: dependabot-metadata
         uses: dependabot/fetch-metadata@v2
 
-      - uses: actions/checkout@v4 
-
-      - name: Authenticate with PAT
-        run: |
-          echo ${{ secrets.PAT_TOKEN }} | gh auth login --with-token
-          # echo "$GH_TOKEN" | gh auth login --with-token
-        shell: bash
-
       - name: Set up node
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         uses: actions/setup-node@v4
