@@ -18,7 +18,7 @@ env:
   GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
   GIT_COMMITTER_NAME: GitHub
   GIT_COMMITTER_EMAIL: actions@github.com
-  CURRENT_BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+  TARGET_BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
   NEW_BRANCH_NAME: msw-update-${{ github.run_id }}
 
 jobs:
@@ -26,38 +26,55 @@ jobs:
     if: ${{ github.actor == 'dependabot[bot]' && !contains(github.event.pull_request.title, 'DEV_UPDATE') }}
     runs-on: ubuntu-latest
     steps:
-      - name: Dependabot metadata
+      -
+        name: Dependabot metadata
         id: dependabot-metadata
         uses: dependabot/fetch-metadata@v2
-
-      - uses: actions/checkout@v4 
+      -
+        uses: actions/checkout@v4
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
-
-      - name: Authenticate with PAT
+      -
+        name: Authenticate with PAT
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
           echo ${{ secrets.PAT_TOKEN }} | gh auth login --with-token
           echo "${{ toJSON(steps.dependabot-metadata.outputs) }}"
           echo "github.event.pull_request.number is => ${{github.event.pull_request.number}}"
-
-      - name: Set up node
+      -
+        name: Set up node
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
-
-      - name: Install node_modules
+      -
+        name: Install node_modules
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: npm ci
+
 # ************************************************
-      # - name: Regenerate mockServiceWorker.js
-      #   if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
-      #   run: |
-      #     git config pull.rebase false      
-      #     git pull origin ${{ github.event.pull_request.head.ref }} --allow-unrelated-histories
-      #     git checkout ${{ github.event.pull_request.head.ref }}
-      #     npx msw init public/ --save
+      - name: Fetch and Merge Target Branch
+        if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        run: |
+          git fetch origin
+          git checkout $TARGET_BRANCH_NAME
+          git merge origin/master
+          git push origin $TARGET_BRANCH_NAME
+
+      - name: Regenerate mockServiceWorker.js
+        if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        run: |
+          npx msw init public/ --save
+
+      - name: Check for changes in mockServiceWorker.js
+        if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        run: |
+          git status --porcelain
+          git add .
+          git commit --no-verify -m "[ci skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
+          git push origin $CURRENT_BRANCH_NAME
+
+
 
       # - name: Check for changes in mockServiceWorker.js
       #   if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
@@ -77,27 +94,28 @@ jobs:
       #     fi
 
 # ************************************************
-          
-      - name: Create new PR
-        if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
-        env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
-          NEW_BRANCH_NAME: test-branch-${{ github.run_id }}
-        run: |
-          git checkout -b $NEW_BRANCH_NAME
-          npm i -D msw@${{ steps.dependabot-metadata.outputs.new-version }}
-          git add .
-          git commit --no-verify -m "Applied commit"
-          git push origin $NEW_BRANCH_NAME
-          gh pr create \
-            --title "Test: create new pull request from CI/CD workflow" \
-            --body "Some text info ...." \
-            --base master \
-            --head $NEW_BRANCH_NAME
+# *** START ***          
+      # - name: Create new PR
+      #   if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+      #   env:
+      #     GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+      #     NEW_BRANCH_NAME: test-branch-${{ github.run_id }}
+      #   run: |
+      #     git checkout -b $NEW_BRANCH_NAME
+      #     npm remove msw
+      #     npm i -D msw@${{ steps.dependabot-metadata.outputs.new-version }}
+      #     git add .
+      #     git commit --no-verify -m "Applied commit"
+      #     git push origin $NEW_BRANCH_NAME
+      #     gh pr create \
+      #       --title "Test: create new pull request from CI/CD workflow" \
+      #       --body "Some text info ...." \
+      #       --base master \
+      #       --head $NEW_BRANCH_NAME
 
-          gh pr ready "${{github.event.pull_request.number}}" --undo
+      #     gh pr ready "${{github.event.pull_request.number}}" --undo
 
-      
+# *** END ***  
 # ************************************************
 
       # - name: Find Dependabot PR for msw
