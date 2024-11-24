@@ -38,6 +38,7 @@ jobs:
         run: |
           echo ${{ secrets.PAT_TOKEN }} | gh auth login --with-token
           echo "${{ toJSON(steps.dependabot-metadata.outputs) }}"
+          echo "github.event.pull_request.number is => ${{github.event.pull_request.number}}"
 
       - name: Set up node
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
