@@ -94,17 +94,17 @@ jobs:
       - name: Run linting
         continue-on-error: true # next step fails in case of errors
         run: npm run lint:ci
-      - name: Annotate Code Linting Results
-        uses: ataylorme/eslint-annotate-action@v3
-        # if: ${{ always() && github.actor != 'dependabot[bot]' }} # dependabot doesn't have permissions
-        if: ${{ always() }} # dependabot doesn't have permissions
-        with:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          report-json: 'eslint_report.json'
-          only-pr-files: false
-          fail-on-warning: false
-      # - name: Check if proxies files has correct structure
-      #   uses: actions/github-script@v7
+      # - name: Annotate Code Linting Results
+      #   uses: ataylorme/eslint-annotate-action@v3
+      #   if: ${{ always() && github.actor != 'dependabot[bot]' }} # dependabot doesn't have permissions
+      #   # if: ${{ always() }} # dependabot doesn't have permissions
+      #   with:
+      #     GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      #     report-json: 'eslint_report.json'
+      #     only-pr-files: false
+      #     fail-on-warning: false
+      # # - name: Check if proxies files has correct structure
+      # #   uses: actions/github-script@v7
 
   # unittests:
   #   needs: msw
