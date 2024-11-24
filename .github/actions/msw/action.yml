@@ -54,6 +54,7 @@ runs:
             git status --porcelain
             git add .
             git commit --no-verify -m "[dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
+            git pull origin master --rebase
             # git push origin $CURRENT_BRANCH_NAME
             # git push
             git push origin HEAD:${{ github.event.pull_request.base.ref }}
