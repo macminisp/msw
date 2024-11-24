@@ -55,7 +55,8 @@ runs:
             git add .
             git commit --no-verify -m "[dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
             # git push origin $CURRENT_BRANCH_NAME
-            git push
+            # git push
+            git push origin HEAD:${{ github.event.pull_request.base.ref }}
           else
             echo "No changes in mockServiceWorker.js"
           fi   
