@@ -38,12 +38,12 @@ runs:
           git config --global user.email "shvepsik7@gmail.com"
           git config --global user.name "roman_shvets"
 
-          git fetch origin
-          git checkout $CURRENT_BRANCH_NAME
-          git merge origin/master --allow-unrelated-histories || {
-            echo "Merge conflict detected. Resolve manually.";
-            exit 1;
-          }
+          # git fetch origin
+          # git checkout $CURRENT_BRANCH_NAME
+          # git merge origin/master --allow-unrelated-histories || {
+          #   echo "Merge conflict detected. Resolve manually.";
+          #   exit 1;
+          # }
           npx msw init public/ --save
         shell: bash
 
@@ -54,7 +54,8 @@ runs:
             git status --porcelain
             git add .
             git commit --no-verify -m "[dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
-            git push origin $CURRENT_BRANCH_NAME
+            # git push origin $CURRENT_BRANCH_NAME
+            git push
           else
             echo "No changes in mockServiceWorker.js"
           fi   
