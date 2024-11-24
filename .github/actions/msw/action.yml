@@ -35,8 +35,8 @@ runs:
         run: |
           echo "Current branch is: $(git rev-parse --abbrev-ref HEAD)"
           git config pull.rebase false      
-          git pull origin $BRANCH_NAME --allow-unrelated-histories
-          git checkout $BRANCH_NAME
+          git pull origin ${{ github.event.pull_request.base.ref }} --allow-unrelated-histories
+          git checkout ${{ github.event.pull_request.base.ref }}
           npx msw init public/ --save
         shell: bash
         env:
