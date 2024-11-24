@@ -61,13 +61,12 @@ runs:
         shell: bash
         run: |
           if [[ $(git status --porcelain) ]]; then
+            CURRENT_TITLE=$(gh pr view $PR_NUMBER --json title --jq ".title")
+            gh pr edit $PR_NUMBER --title "DEV_UPDATE: $CURRENT_TITLE"
             git status --porcelain
             git add .
             git commit -m --amend "[ci--skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"  
             git push
-
-            CURRENT_TITLE=$(gh pr view $PR_NUMBER --json title --jq ".title")
-            gh pr edit $PR_NUMBER --title "DEV_UPDATE: $CURRENT_TITLE"
           else
             echo "No changes in mockServiceWorker.js"
           fi
