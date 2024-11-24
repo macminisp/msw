@@ -48,11 +48,15 @@ jobs:
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
           # git config pull.rebase false
+
           git fetch origin
-          git rebase origin/master
-          git pull origin $CURRENT_BRANCH_NAME --allow-unrelated-histories
           git checkout $CURRENT_BRANCH_NAME
+          git merge origin/master || {
+            echo "Merge conflict detected. Resolve manually.";
+            exit 1;
+          }
           npx msw init public/ --save
+          
       - name: Check for changes in mockServiceWorker.js
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
