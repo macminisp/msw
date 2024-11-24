@@ -77,13 +77,15 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           if [[ $(git status --porcelain) ]]; then
+            CURRENT_TITLE=$(gh pr view $PR_NUMBER --json title --jq ".title")
+            gh pr edit $PR_NUMBER --title "DEV_UPDATE: $CURRENT_TITLE"
             git status --porcelain
             git add .
             git commit --no-verify -m "[ci skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
             git push origin $CURRENT_BRANCH_NAME
             
-            CURRENT_TITLE=$(gh pr view $PR_NUMBER --json title --jq ".title")
-            gh pr edit $PR_NUMBER --title "DEV_UPDATE: $CURRENT_TITLE"
+            
+            
           else
             echo "No changes in mockServiceWorker.js"
           fi   
