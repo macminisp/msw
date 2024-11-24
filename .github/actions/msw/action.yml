@@ -18,6 +18,12 @@ runs:
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: npm ci
         shell: bash   
+      
+      - name: Authenticate with PAT
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: echo $PAT_TOKEN | gh auth login --with-token
+        shell: bash
 
       - name: Regenerate mockServiceWorker.js
         if: ${{contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
