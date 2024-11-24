@@ -77,7 +77,7 @@ jobs:
           if [[ $(git status --porcelain) ]]; then
             git status --porcelain
             git add .
-            git commit --no-verify -m "[dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
+            git commit --no-verify -m "[ci skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
             git push origin $CURRENT_BRANCH_NAME
           else
             echo "No changes in mockServiceWorker.js"
