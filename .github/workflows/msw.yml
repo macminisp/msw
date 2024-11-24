@@ -51,7 +51,9 @@ jobs:
         name: Install node_modules
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: npm ci
+
 # ************************************************
+
       - name: Regenerate mockServiceWorker.js
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
