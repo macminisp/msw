@@ -57,8 +57,8 @@ runs:
           if [[ $(git status --porcelain) ]]; then
             git status --porcelain
             git add .
-            git commit -m "[dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"  
-            git push 
+            git commit -m "[ci skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"  
+            git push
           else
             echo "No changes in mockServiceWorker.js"
           fi
