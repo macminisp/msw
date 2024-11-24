@@ -3,25 +3,24 @@ description: 'run msw action'
 runs:
   using: 'composite'
   steps:
-      # - name: Dependabot metadata
-      #   id: dependabot-metadata
-      #   uses: dependabot/fetch-metadata@v2
-      
+      - name: Dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v2 
 
       - name: Set up node
-        # if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
 
       - name: Install node_modules
-        # if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: npm ci
         shell: bash   
 
       - name: Regenerate mockServiceWorker.js
-        # if: ${{contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        if: ${{contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
           echo "Current branch is: $(git rev-parse --abbrev-ref HEAD)"
           git config pull.rebase false      
@@ -45,7 +44,7 @@ runs:
           GIT_COMMITTER_EMAIL: actions@github.com
 
       - name: Check for changes in mockServiceWorker.js
-        # if: ${{contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        if: ${{contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         env:
           GIT_AUTHOR_NAME: ${{ github.actor }}
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
