@@ -19,6 +19,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  msw:
+    name: msw job
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    uses: ./.github/actions/msw
 
   # msw:
   #   if: ${{ github.actor == 'dependabot[bot]' }}
@@ -69,7 +73,7 @@ jobs:
 
   lint:
     # needs: msw
-    if: ${{ !contains(github.event.pull_request.title, 'MSW_UPDATE') }}
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

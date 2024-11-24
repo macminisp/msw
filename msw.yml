@@ -3,10 +3,10 @@ name: msw
 on:
   pull_request:
     types: [opened, synchronize]
-  workflow_run:
-    workflows: ['pr']
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ['pr']
+  #   types:
+  #     - completed
 
 permissions:
   contents: write
