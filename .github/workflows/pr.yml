@@ -24,6 +24,8 @@ jobs:
     if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Get code
+        uses: actions/checkout@v4
       - name: msw action
         uses: ./.github/actions/msw
 
