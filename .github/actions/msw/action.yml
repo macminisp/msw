@@ -51,13 +51,18 @@ runs:
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
           GIT_COMMITTER_NAME: GitHub
           GIT_COMMITTER_EMAIL: actions@github.com
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         shell: bash
         run: |
           if [[ $(git status --porcelain) ]]; then
             git status --porcelain
             git add .
-            git commit -m --amend "[ci skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"  
+            git commit -m --amend "[ci--skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"  
             git push
+
+            CURRENT_TITLE=$(gh pr view $PR_NUMBER --json title --jq ".title")
+            gh pr edit $PR_NUMBER --title "DEV_UPDATE: $CURRENT_TITLE"
           else
             echo "No changes in mockServiceWorker.js"
           fi

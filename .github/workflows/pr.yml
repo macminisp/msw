@@ -22,7 +22,7 @@ jobs:
   msw:
     name: msw job
     # if: ${{ github.actor == 'dependabot[bot]' }}
-    if: ${{ !contains(github.event.head_commit.message, '[ci-skip]') 
+    if: ${{ github.actor == 'dependabot[bot]' && !contains(github.event.pull_request.title, 'DEV_UPDATE') }}
     runs-on: ubuntu-latest
     steps:
       - name: Get code
@@ -79,6 +79,8 @@ jobs:
   #         fi
 
   lint:
+    needs: msw
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
