@@ -33,7 +33,10 @@ runs:
       - name: Regenerate mockServiceWorker.js
         if: ${{contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
-          git checkout ${{ github.event.pull_request.head.ref }}
+          echo "Current branch is: $(git rev-parse --abbrev-ref HEAD)"
+          git config pull.rebase false      
+          git pull origin $BRANCH_NAME --allow-unrelated-histories
+          git checkout $BRANCH_NAME
           npx msw init public/ --save
         shell: bash
         env:
