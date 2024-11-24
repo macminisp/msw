@@ -80,7 +80,7 @@ jobs:
       - name: Create new PR
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           NEW_BRANCH_NAME: test-branch-${{ github.run_id }}
         run: |
           git checkout -b $NEW_BRANCH_NAME
