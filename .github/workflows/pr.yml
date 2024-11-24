@@ -82,10 +82,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          echo '${{ toJSON(needs) }}' | jq -e 'to_entries | all(.value.result == "success")'
-          echo '-----'
-          echo echo '${{ toJSON(needs) }}' | jq -e 'to_entries'
       - name: Set up node
         uses: actions/setup-node@v4
         with:
