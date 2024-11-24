@@ -18,7 +18,7 @@ env:
   GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
   GIT_COMMITTER_NAME: GitHub
   GIT_COMMITTER_EMAIL: actions@github.com
-  CURRENT_BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+  TARGET_BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
   NEW_BRANCH_NAME: msw-update-${{ github.run_id }}
 
 jobs:
@@ -53,31 +53,45 @@ jobs:
         run: npm ci
 
 # ************************************************
+      - name: Fetch and Merge Target Branch
+        if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+        run: |
+          git fetch origin
+          git checkout $TARGET_BRANCH_NAME
+          git merge origin/master
+          git push origin $TARGET_BRANCH_NAME
 
       - name: Regenerate mockServiceWorker.js
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
-          git config pull.rebase false      
-          git pull origin ${{ github.event.pull_request.head.ref }} --allow-unrelated-histories
-          git checkout ${{ github.event.pull_request.head.ref }}
           npx msw init public/ --save
 
       - name: Check for changes in mockServiceWorker.js
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if [[ $(git status --porcelain) ]]; then
-            CURRENT_TITLE=$(gh pr view $PR_NUMBER --json title --jq ".title")
-            gh pr edit $PR_NUMBER --title "DEV_UPDATE: $CURRENT_TITLE"
-            git status --porcelain
-            git add .
-            git commit --no-verify -m "[ci skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
-            git push origin $CURRENT_BRANCH_NAME
+          git status --porcelain
+          git add .
+          git commit --no-verify -m "[ci skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
+          git push origin $CURRENT_BRANCH_NAME
+
+
+
+      # - name: Check for changes in mockServiceWorker.js
+      #   if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
+      #   env:
+      #     PR_NUMBER: ${{ github.event.pull_request.number }}
+      #   run: |
+      #     if [[ $(git status --porcelain) ]]; then
+      #       CURRENT_TITLE=$(gh pr view $PR_NUMBER --json title --jq ".title")
+      #       gh pr edit $PR_NUMBER --title "DEV_UPDATE: $CURRENT_TITLE"
+      #       git status --porcelain
+      #       git add .
+      #       git commit --no-verify -m "[ci skip] [dependabot skip] Automatically updatiing mockServiceWorker.js file after 'msw' update in package.json"
+      #       git push origin $CURRENT_BRANCH_NAME
             
-          else
-            echo "No changes in mockServiceWorker.js"
-          fi
+      #     else
+      #       echo "No changes in mockServiceWorker.js"
+      #     fi
 
 # ************************************************
 # *** START ***          
