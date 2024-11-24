@@ -37,7 +37,7 @@ runs:
 
           git fetch origin
           git checkout $CURRENT_BRANCH_NAME
-          git merge origin/master || {
+          git merge origin/master --allow-unrelated-histories || {
             echo "Merge conflict detected. Resolve manually.";
             exit 1;
           }
