@@ -75,8 +75,6 @@ jobs:
       #       echo "No changes in mockServiceWorker.js"
       #     fi
 
-
-      - name: Extract msw version
           
       - name: Create new PR
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
@@ -85,9 +83,7 @@ jobs:
           NEW_BRANCH_NAME: test-branch-${{ github.run_id }}
         run: |
           git checkout -b $NEW_BRANCH_NAME
-          
-          npm remove msw && npm i msw@latest
-          
+          npm i -D msw@${{ steps.dependabot-metadata.outputs.new-version }}
           git add .
           git commit --no-verify -m "Applied commit"
           git push origin $NEW_BRANCH_NAME
@@ -96,6 +92,9 @@ jobs:
             --body "Some text info ...." \
             --base master \
             --head $NEW_BRANCH_NAM
+
+          gh pr ready "${{github.event.pull_request.number}}" --undo
+
       
       # - name: Find Dependabot PR for msw
       #   if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
