@@ -61,7 +61,7 @@ jobs:
       - name: Fetch and Merge Target Branch
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
-          git fetch origin
+          # git fetch origin
           git checkout $TARGET_BRANCH_NAME
           git merge origin/master
           git push origin $TARGET_BRANCH_NAME
