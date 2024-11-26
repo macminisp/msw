@@ -24,7 +24,7 @@ env:
 
 jobs:
   update_msw_worker:
-    if: ${{ github.actor == 'dependabot[bot]' && !contains(github.event.pull_request.title, 'DEV_UPDATE') }}
+    if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
       -
@@ -44,7 +44,11 @@ jobs:
           echo ${{ secrets.PAT_TOKEN }} | gh auth login --with-token
           echo "${{ toJSON(steps.dependabot-metadata.outputs) }}"
           echo "github.event.pull_request.number is => ${{github.event.pull_request.number}}"
-          git remote set-url origin https://x-access-token/:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
+          # git remote set-url origin https://x-access-token/:${{ secrets.PAT_TOKEN }}@github.com/${{ github.repository }}
+          # github.event.commits[0].author.name != 'GitHubActions'
+          echo "${{github.event.commits[0].author.name}}"
+
+          echo "${{ toJson(github.event.commits)}}"
       -
         name: Set up node
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
@@ -61,7 +65,7 @@ jobs:
       - name: Fetch and Merge Target Branch
         if: ${{ contains(steps.dependabot-metadata.outputs.dependency-names, 'msw') }}
         run: |
-          # git fetch origin
+          git fetch origin
           git checkout $TARGET_BRANCH_NAME
           git merge origin/master
           git push origin $TARGET_BRANCH_NAME
