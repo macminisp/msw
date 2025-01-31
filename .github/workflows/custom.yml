@@ -1,7 +1,20 @@
 name: custom
 
+# on:
+#   workflow_dispatch: # Allows manual trigger of the workf
+
 on:
-  workflow_dispatch: # Allows manual trigger of the workf
+  workflow_dispatch:
+    inputs:
+      deployTarget:
+        description: 'Select deployment target'
+        required: true
+        default: 'none'
+        type: choice
+        options:
+          - none
+          - all
+          - staging
 
 env:
   GH_TOKEN: ${{ secrets.PAT_TOKEN }}
